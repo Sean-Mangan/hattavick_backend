@@ -3,6 +3,8 @@ app: hattavick-backend
 service: hattavick-backend
 
 frameworkVersion: '2'
+	
+variablesResolutionMode: 20210326
 
 provider:
   name: aws
@@ -19,3 +21,6 @@ functions:
       - http:
           path: /{proxy+}
           method: ANY
+    environment:
+      MONGO_USER: ${ssm:/hattavick/mongo/user}
+      MONGO_PASSWORD: ${ssm:/hattavick/mongo/password}
