@@ -19,7 +19,7 @@ app.use(session({
     resave: false,
     cookie: {
       httpOnly: true,
-      maxAge: parseInt(60),
+      maxAge: parseInt(3600000),
     }
   })
 );
