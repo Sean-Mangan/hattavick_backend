@@ -6,11 +6,12 @@ const app = express();
 var cors = require('cors')
 
 var corsOptions = {
-  origin: 'http://hattavick.com',
+  origin: true,
+  credentials: true,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
-app.use(cors())
+app.use(cors(corsOptions))
 
 // init session
 app.use(session({
