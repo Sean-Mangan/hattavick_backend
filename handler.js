@@ -21,6 +21,7 @@ app.use(cookieParser())
 // init session
 app.use(session({
     secret: "secret",
+    proxy: true,
     saveUninitialized: true,
     resave: false,
     cookie: {
