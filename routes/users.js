@@ -17,7 +17,7 @@ router.post("/", (req, res, next) => {
             if (err) throw err
             if (result) {
               req.session.user = result.name
-              res.status(200).json(result);
+              res.cookie("hattavick_user", result.name, { maxAge: 172800000, httpOnly: true }).status(200).json(result);
             } else{
               res.status(404).json({error: "Not Found"})
             }

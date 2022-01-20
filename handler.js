@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const database = require("./database/database")
 const MongoStore = require('connect-mongo');
+var cookieParser = require("cookie-parser");
 const app = express();
 var cors = require('cors')
 
@@ -14,6 +15,8 @@ var corsOptions = {
 }
 
 app.use(cors(corsOptions))
+app.use(bodyParser.json());
+app.use(cookieParser())
 
 // init session
 app.use(session({
@@ -32,8 +35,18 @@ app.use(session({
   })
 );
 
-// JSON parse each request
-app.use(bodyParser.json());
+app.use(function (req, res, next) {
+  var cookie = req.cookies.hattavick_user;
+  if (cookie) {
+    req.session.user = cookie
+  } 
+  next();
+});
+
+app.use(function (req, res, next) {
+  console.log(req.cookies)
+  next()
+})
 
 // Import routes
 const userRoutes = require('./routes/users');
@@ -45,10 +58,11 @@ app.get("/", (req, res, next) => {
   });
 });
 
-
 app.get("/logout", (req, res, next) => {
   if(req.session.user){
+    res.clearCookie('hattavick_user');
     req.session.destroy();
+    console.log("cleared cookie and logged out")
     return res.status(200).json({
       message: "Successfully logged out",
     });
