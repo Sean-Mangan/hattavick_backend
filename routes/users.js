@@ -1,7 +1,7 @@
 const serverless = require("serverless-http");
 const express = require("express");
 const router = express.Router();
-const client = require('../database/database');
+const database = require('../database/database');
 
 router.post("/", (req, res, next) => {
   console.log("USER REQUEST", req.body)
@@ -10,8 +10,8 @@ router.post("/", (req, res, next) => {
     res.status(200).json({"name": req.session.user});
   }else{
     if (req.body.name){
-      client.connect(err => {
-        client.db("Hattavick").collection("user_data").findOne(req.body, (err,result) => {
+      database.client.connect(err => {
+        database.client.db("Hattavick").collection("user_data").findOne(req.body, (err,result) => {
           try {
             console.log(req.session.user)
             if (err) throw err

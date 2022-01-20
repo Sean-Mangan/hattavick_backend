@@ -2,6 +2,8 @@ const serverless = require("serverless-http");
 const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const database = require("./database/database")
+const MongoStore = require('connect-mongo');
 const app = express();
 var cors = require('cors')
 
@@ -21,7 +23,12 @@ app.use(session({
     cookie: {
       httpOnly: true,
       maxAge: parseInt(3600000),
-    }
+    },
+    store: MongoStore.create({
+      mongoUrl: database.uri, //YOUR MONGODB URL
+      ttl: 14 * 24 * 60 * 60,
+      autoRemove: 'native' 
+  })
   })
 );
 
