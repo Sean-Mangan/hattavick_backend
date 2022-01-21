@@ -3,7 +3,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const database = require("./database/database")
-const MongoStore = require('connect-mongo');
 var cookieParser = require("cookie-parser");
 const app = express();
 var cors = require('cors')
@@ -28,12 +27,7 @@ app.use(session({
       httpOnly: true,
       sameSite: 'None',
       maxAge: parseInt(3600000),
-    },
-    store: MongoStore.create({
-      mongoUrl: database.uri, //YOUR MONGODB URL
-      ttl: 14 * 24 * 60 * 60,
-      autoRemove: 'native' 
-  })
+    }
   })
 );
 
