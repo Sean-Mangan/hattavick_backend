@@ -45,16 +45,10 @@ app.use(function (req, res, next) {
 })
 
 // Import routes
-const userRoutes = require('./routes/users');
-app.use("/api/login", userRoutes);
+const apiRoutes = require('./routes/users');
+app.use("/api", apiRoutes);
 
 app.get("/", (req, res, next) => {
-  return res.status(200).json({
-    message: "Hello from home",
-  });
-});
-
-app.get("/api/homepage", (req, res, next) => {
   return res.status(200).json({
     message: "Hello from home",
   });
