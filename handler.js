@@ -54,6 +54,12 @@ app.get("/", (req, res, next) => {
   });
 });
 
+app.get("/api/homepage", (req, res, next) => {
+  return res.status(200).json({
+    message: "Hello from home",
+  });
+});
+
 app.get("/logout", (req, res, next) => {
   if(req.session.user){
     res.clearCookie('hattavick_user');
