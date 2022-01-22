@@ -39,11 +39,6 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use(function (req, res, next) {
-  console.log(req.cookies)
-  next()
-})
-
 // Import routes
 const apiRoutes = require('./routes/users');
 app.use("/api", apiRoutes);
