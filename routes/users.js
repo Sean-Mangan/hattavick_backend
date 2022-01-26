@@ -74,7 +74,6 @@ router.post("/characters", async (req, res, next) => {
                 for (let a_idx = 0; a_idx < result.length; a_idx++){
                   let npc = result[a_idx]
                   delete npc.all_notes
-                  delete npc.visible
                   if (npc.visible){
                     resp.push(npc)
                   }else{
