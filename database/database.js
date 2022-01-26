@@ -10,5 +10,4 @@ module.exports = {
     "username" : username,
     "password" : password,
     "uri" : uri,
-    "get_permissions" : get_user_permissions,
 };
