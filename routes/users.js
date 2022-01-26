@@ -100,7 +100,7 @@ router.post("/characters", async (req, res, next) => {
 
 router.post("/allcharacters", async (req, res, next) => {
   try {
-      if (req.body && req.session.user === "admin"){
+      if (req.body && req.session.user === "sean"){
         database.client.connect(err => {
             if (err) throw err;
             database.client.db("Hattavick").collection("npcs").find({}).toArray(function(err, result) {
