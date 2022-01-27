@@ -86,6 +86,86 @@ router.put("/character", async (req, res, next) => {
   }
 });
 
+router.post("/character", async (req, res, next) => {
+  try {
+    if (req.body && req.session.user === "Sean" ){
+      var char = req.body
+
+      var new_char = {
+        "name": req.body.name,
+        "location": " ",
+        "description": "",
+        "available_notes": [],
+        "all_notes": [],
+        "visible": false,
+        "icon": "",
+        "image": "",
+        "job": ""
+      }
+      console.log(new_char)
+
+      database.client.connect(err => {
+        if (err) throw err;
+        database.client.db("Hattavick").collection("npcs").insertOne(new_char, (err, result) =>{
+          if (err) throw err;
+          if(result){
+            console.log("Added NPC")
+            res.status(200).json({"status" : result});
+          }else{
+            console.log("Could not add NPC")
+            res.status(404).json({error: "Not Found"})
+          }
+        });
+      });
+    }else{
+      res.status(404).json({error: "Bad Permissions"})
+    }
+  }catch(err) {
+    console.log(err)
+    res.status(500).json({error : 'Internal Server Error'});
+  }
+});
+
+router.delete("/character", async (req, res, next) => {
+  try {
+    if (req.body && req.session.user === "Sean" ){
+      var char = req.body
+
+      var new_char = {
+        "name": req.body.name,
+        "location": " ",
+        "description": "",
+        "available_notes": [],
+        "all_notes": [],
+        "visible": false,
+        "icon": "",
+        "image": "",
+        "job": ""
+      }
+      console.log(new_char)
+
+      database.client.connect(err => {
+        if (err) throw err;
+        database.client.db("Hattavick").collection("npcs").deleteOne({"name": req.body.name}, (err, result) =>{
+          if (err) throw err;
+          if(result){
+            console.log("Deleted NPC")
+            res.status(200).json({"status" : result});
+          }else{
+            console.log("Could not delete NPC")
+            res.status(404).json({error: "Not Found"})
+          }
+        });
+      });
+    }else{
+      res.status(404).json({error: "Bad Permissions"})
+    }
+  }catch(err) {
+    console.log(err)
+    res.status(500).json({error : 'Internal Server Error'});
+  }
+});
+
 
 
 router.post("/characters", async (req, res, next) => {
