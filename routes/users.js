@@ -60,6 +60,32 @@ router.post("/page", (req, res, next) => {
     }
 });
 
+router.put("/character", async (req, res, next) => {
+  try {
+    if (req.body && req.session.user === "Sean" ){
+      console.log(req.body)
+      database.client.connect(err => {
+        if (err) throw err;
+        database.client.db("Hattavick").collection("npcs").updateOne({"name": req.body.name}, {$set: req.body}, (err, result) =>{
+          if (err) throw err;
+          if(result){
+            console.log("Updated npcs data")
+            res.status(200).json({"status" : result});
+          }else{
+            console.log("Could not find page data")
+            res.status(404).json({error: "Not Found"})
+          }
+        });
+      });
+    }else{
+      res.status(404).json({error: "Bad Permissions"})
+    }
+  }catch(err) {
+    console.log(err)
+    res.status(500).json({error : 'Internal Server Error'});
+  }
+});
+
 
 
 router.post("/characters", async (req, res, next) => {
@@ -113,9 +139,9 @@ router.post("/allcharacters", async (req, res, next) => {
               }
             });
           });
-        }else{
-            res.status(404).json({error: "Not Found"})
-        }
+      }else{
+          res.status(404).json({error: "Bad Permissions"})
+      }
     }catch(err) {
       console.log(err)
       res.status(500).json({error : 'Internal Server Error'});

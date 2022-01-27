@@ -9,5 +9,5 @@ module.exports = {
     "client" : client,
     "username" : username,
     "password" : password,
-    "uri" : uri,
+    "uri" : uri
 };
