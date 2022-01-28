@@ -166,7 +166,39 @@ router.delete("/character", async (req, res, next) => {
   }
 });
 
-
+router.patch("/character", async (req, res, next) => {
+  try {
+    if (!req.session.user) {
+      res.status(405).json({error: "Please log in before getting resource"})
+    }
+    else if (req.body.name){
+      database.client.connect(err => {
+        if (err) throw err;
+        database.client.db("Hattavick").collection("npcs").findOne(req.body, (err, result) =>{
+          if (err) throw err;
+          console.log(result)
+          if(!result.visible && req.session.user !== "Sean"){
+            res.status(405).json({error : "Bad Permissions"});
+          }
+          else if(result && result.visible){
+            console.log("found npc")
+            delete result.visible
+            delete result.all_notes
+            res.status(200).json({"status" : result});
+          }else{
+            console.log("Could not find NPC")
+            res.status(404).json({error: "Not Found"})
+          }
+        });
+      });
+    }else{
+      res.status(405).json({error: "Require name field"})
+    }
+  }catch(err) {
+    console.log(err)
+    res.status(500).json({error : 'Internal Server Error'});
+  }
+});
 
 router.post("/characters", async (req, res, next) => {
   try {
