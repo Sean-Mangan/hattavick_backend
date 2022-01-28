@@ -184,7 +184,7 @@ router.patch("/character", async (req, res, next) => {
             console.log("found npc")
             delete result.visible
             delete result.all_notes
-            res.status(200).json({"status" : result});
+            res.status(200).json(result);
           }else{
             console.log("Could not find NPC")
             res.status(404).json({error: "Not Found"})
