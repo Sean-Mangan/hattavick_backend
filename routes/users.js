@@ -86,11 +86,63 @@ router.put("/character", async (req, res, next) => {
   }
 });
 
+router.get("/page", async (req, res, next) => {
+  try {
+    if (req.body){
+      console.log(req.body)
+      database.client.connect(err => {
+        if (err) throw err;
+        database.client.db("Hattavick").collection("page_overview").find({}).toArray(function(err, result) {
+          if (err) throw err;
+          if(result){
+            console.log("Got all page data")
+            res.status(200).json({"pages" : result});
+          }else{
+            console.log("Could not find page data")
+            res.status(404).json({error: "Not Found"})
+          }
+        });
+      });
+    }else{
+      res.status(404).json({error: "Bad Permissions"})
+    }
+  }catch(err) {
+    console.log(err)
+    res.status(500).json({error : 'Internal Server Error'});
+  }
+});
+
+router.put("/page", async (req, res, next) => {
+  try {
+    if (req.body.page && req.session.user === "Sean" ){
+      console.log(req.body)
+      database.client.connect(err => {
+        if (err) throw err;
+        database.client.db("Hattavick").collection("page_overview").updateOne({"page": req.body.page}, {$set: req.body}, (err, result) =>{
+          if (err) throw err;
+          if(result){
+            console.log("Updated page data")
+            res.status(200).json({"status" : result});
+          }else{
+            console.log("Could not find page to update")
+            res.status(404).json({error: "Not Found"})
+          }
+        });
+      });
+    }else{
+      res.status(404).json({error: "Bad Permissions"})
+    }
+  }catch(err) {
+    console.log(err)
+    res.status(500).json({error : 'Internal Server Error'});
+  }
+});
+
+
+
 router.post("/character", async (req, res, next) => {
   try {
     if (req.body && req.session.user === "Sean" ){
-      var char = req.body
-
       var new_char = {
         "name": req.body.name,
         "location": " ",
