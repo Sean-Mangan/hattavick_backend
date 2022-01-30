@@ -112,6 +112,60 @@ router.get("/page", async (req, res, next) => {
   }
 });
 
+
+router.get("/player_character", async (req, res, next) => {
+  try {
+    if (req.session.user){
+      console.log(req.body)
+      database.client.connect(err => {
+        if (err) throw err;
+        database.client.db("Hattavick").collection("player_characters").findOne({"player_name" : req.session.user}, function(err, result) {
+          if (err) throw err;
+          if(result){
+            console.log("Successful got player character")
+            delete result._id
+            res.status(200).json(result);
+          }else{
+            console.log("Could not find character")
+            res.status(404).json({error: "Not Found"})
+          }
+        });
+      });
+    }else{
+      res.status(404).json({error: "Not Logged In, Bitch"})
+    }
+  }catch(err) {
+    console.log(err)
+    res.status(500).json({error : 'Internal Server Error'});
+  }
+});
+
+router.put("/player_character", async (req, res, next) => {
+  try {
+    if ((req.session.user) && (req.session.user === req.body.player_name)){
+      console.log(req.body)
+      database.client.connect(err => {
+        if (err) throw err;
+        database.client.db("Hattavick").collection("player_characters").updateOne({"player_name" : req.session.user}, {$set: req.body}, function(err, result) {
+          if (err) throw err;
+          if(result){
+            console.log("Updated Character")
+            res.status(200).json(result);
+          }else{
+            console.log("Could not find character")
+            res.status(404).json({error: "Not Found"})
+          }
+        });
+      });
+    }else{
+      res.status(404).json({error: "Bad Permissions"})
+    }
+  }catch(err) {
+    console.log(err)
+    res.status(500).json({error : 'Internal Server Error'});
+  }
+});
+
 router.put("/page", async (req, res, next) => {
   try {
     if (req.body.page && req.session.user === "Sean" ){
