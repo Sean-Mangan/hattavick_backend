@@ -422,6 +422,37 @@ router.post("/notes", async (req, res, next) => {
     }
 });
 
+router.delete("/notes", async (req, res, next) => {
+  try {
+      if (req.session.user && req.body._id){
+        database.client.connect(err => {
+          if (err) throw err;
+
+          var note_find_params = {
+            "_id": ObjectId(req.body._id),
+            "name": req.session.user
+          }
+
+          database.client.db("Hattavick").collection("user_notes").deleteOne(note_find_params , (err, result) =>{
+            if (err) throw err;
+            if(result){
+              console.log("Succesfully Deleted Note")
+              res.status(200).json(result);
+            }else{
+              console.log("Could not delete note")
+              res.status(404).json({error: result})
+            }
+          });
+        });
+      }else{
+          res.status(404).json({error: "Bad Permissions"})
+      }
+    }catch(err) {
+      console.log(err)
+      res.status(500).json({error : 'Internal Server Error'});
+    }
+});
+
 router.put("/notes", async (req, res, next) => {
   try {
       if (req.session.user && req.body._id){
