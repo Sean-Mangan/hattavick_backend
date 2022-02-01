@@ -2,6 +2,7 @@ const serverless = require("serverless-http");
 const express = require("express");
 const router = express.Router();
 const database = require('../database/database');
+var ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
 
 router.post("/login", (req, res, next) => {
@@ -235,8 +236,6 @@ router.post("/character", async (req, res, next) => {
 router.delete("/character", async (req, res, next) => {
   try {
     if (req.body && req.session.user === "Sean" ){
-      var char = req.body
-
       var new_char = {
         "name": req.body.name,
         "location": " ",
@@ -357,6 +356,103 @@ router.post("/allcharacters", async (req, res, next) => {
               }
             });
           });
+      }else{
+          res.status(404).json({error: "Bad Permissions"})
+      }
+    }catch(err) {
+      console.log(err)
+      res.status(500).json({error : 'Internal Server Error'});
+    }
+});
+
+router.get("/notes", async (req, res, next) => {
+  try {
+      if (req.session.user){
+        database.client.connect(err => {
+            if (err) throw err;
+            database.client.db("Hattavick").collection("user_notes").find({"name":req.session.user}).toArray(function(err, result) {
+              if (err) throw err;
+              if(result){
+                console.log("Got notes for user")
+                res.status(200).json(result);
+              }else{
+                console.log("Could not find user notes")
+                res.status(404).json({error: "Not Found"})
+              }
+            });
+          });
+      }else{
+          res.status(404).json({error: "Bad Permissions"})
+      }
+    }catch(err) {
+      console.log(err)
+      res.status(500).json({error : 'Internal Server Error'});
+    }
+});
+
+router.post("/notes", async (req, res, next) => {
+  try {
+      if (req.session.user){
+        database.client.connect(err => {
+          var new_note = {
+            name: req.session.user,
+            created: new Date(),
+            last_edit: new Date(),
+            title: (req.body.title) ? req.body.title : "Enter Title",
+            content: (req.body.content) ? req.body.content: "Enter Content"
+          }
+          if (err) throw err;
+          database.client.db("Hattavick").collection("user_notes").insertOne(new_note, (err, result) =>{
+            if (err) throw err;
+            if(result){
+              console.log("Succesfully inserted note")
+              res.status(200).json(result);
+            }else{
+              console.log("Could not insert note")
+              res.status(404).json({error: result})
+            }
+          });
+        });
+      }else{
+          res.status(404).json({error: "Bad Permissions"})
+      }
+    }catch(err) {
+      console.log(err)
+      res.status(500).json({error : 'Internal Server Error'});
+    }
+});
+
+router.put("/notes", async (req, res, next) => {
+  try {
+      if (req.session.user && req.body._id){
+        database.client.connect(err => {
+          if (err) throw err;
+
+          var note_find_params = {
+            "_id": ObjectId(req.body._id),
+            "name": req.session.user
+          }
+
+          var updated_note = {
+            name: req.session.user,
+            last_edit: new Date(),
+            title: (req.body.title) ? req.body.title : "Enter Title",
+            content: (req.body.content) ? req.body.content: "Enter Content"
+          }
+
+          console.log(updated_note)
+
+          database.client.db("Hattavick").collection("user_notes").updateOne(note_find_params, {$set: updated_note}, (err, result) =>{
+            if (err) throw err;
+            if(result){
+              console.log("Succesfully updated note")
+              res.status(200).json(result);
+            }else{
+              console.log("Could not update note")
+              res.status(404).json({error: result})
+            }
+          });
+        });
       }else{
           res.status(404).json({error: "Bad Permissions"})
       }
