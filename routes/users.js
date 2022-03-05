@@ -493,5 +493,128 @@ router.put("/notes", async (req, res, next) => {
     }
 });
 
+router.get("/sessions", async (req, res, next) => {
+  try {
+      if (req.session.user){
+        database.client.connect(err => {
+            if (err) throw err;
+            database.client.db("Hattavick").collection("session_overview").find({}).toArray(function(err, result) {
+              if (err) throw err;
+              if(result){
+                console.log("Got sessions overview")
+                res.status(200).json(result);
+              }else{
+                console.log("Could not find session data")
+                res.status(404).json({error: "Not Found"})
+              }
+            });
+          });
+      }else{
+          res.status(404).json({error: "Bad Permissions"})
+      }
+    }catch(err) {
+      console.log(err)
+      res.status(500).json({error : 'Internal Server Error'});
+    }
+});
+
+router.post("/sessions", async (req, res, next) => {
+  try {
+      if (req.session.user){
+        var new_session = {
+          "title": req.body.title,
+          "data" : req.body.data,
+          "date" : req.body.date
+        }
+        database.client.connect(err => {
+            if (err) throw err;
+            database.client.db("Hattavick").collection("session_overview").insertOne(new_session, (err, result) =>{
+              if (err) throw err;
+              if(result){
+                console.log("Successfully created new session overview")
+                res.status(200).json(result);
+              }else{
+                console.log("Could not create session overview")
+                res.status(404).json({error: "Not Found"})
+              }
+            });
+          });
+      }else{
+          res.status(404).json({error: "Bad Permissions"})
+      }
+    }catch(err) {
+      console.log(err)
+      res.status(500).json({error : 'Internal Server Error'});
+    }
+});
+
+router.put("/sessions", async (req, res, next) => {
+  try {
+      if (req.session.user && req.body._id){
+        database.client.connect(err => {
+          if (err) throw err;
+
+          var session_find_params = {
+            "_id": ObjectId(req.body._id),
+          }
+
+          var updated_session = {
+            date: req.body.date,
+            title: req.body.title,
+            data: req.body.data
+          }
+
+          console.log(updated_session)
+
+          database.client.db("Hattavick").collection("session_overview").updateOne(session_find_params, {$set: updated_session}, (err, result) =>{
+            if (err) throw err;
+            if(result){
+              console.log("Succesfully updated Session")
+              res.status(200).json(result);
+            }else{
+              console.log("Could not update Session")
+              res.status(404).json({error: result})
+            }
+          });
+        });
+      }else{
+          res.status(404).json({error: "Bad Permissions"})
+      }
+    }catch(err) {
+      console.log(err)
+      res.status(500).json({error : 'Internal Server Error'});
+    }
+});
+
+router.delete("/sessions", async (req, res, next) => {
+  try {
+    if (req.body && req.session.user === "Sean" ){
+      database.client.connect(err => {
+        if (err) throw err;
+
+        var session_find_params = {
+          "_id": ObjectId(req.body._id),
+        }
+
+        database.client.db("Hattavick").collection("session_overview").deleteOne(session_find_params, (err, result) =>{
+          if (err) throw err;
+          if(result){
+            console.log("Deleted session")
+            res.status(200).json({"status" : result});
+          }else{
+            console.log("Could not delete session")
+            res.status(404).json({error: "Not Found"})
+          }
+        });
+      });
+    }else{
+      res.status(404).json({error: "Bad Permissions"})
+    }
+  }catch(err) {
+    console.log(err)
+    res.status(500).json({error : 'Internal Server Error'});
+  }
+});
+
 module.exports = router;
   
