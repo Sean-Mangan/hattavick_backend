@@ -307,7 +307,7 @@ router.patch("/character", async (req, res, next) => {
 
 router.post("/characters", async (req, res, next) => {
   try {
-      if (req.body){
+      if (req.body ){
         database.client.connect(err => {
             if (err) throw err;
             database.client.db("Hattavick").collection("npcs").find({}).toArray(function(err, result) {
@@ -392,7 +392,7 @@ router.get("/notes", async (req, res, next) => {
 
 router.post("/notes", async (req, res, next) => {
   try {
-      if (req.session.user){
+      if (req.session.user) {
         database.client.connect(err => {
           var new_note = {
             name: req.session.user,
@@ -520,11 +520,11 @@ router.get("/sessions", async (req, res, next) => {
 
 router.post("/sessions", async (req, res, next) => {
   try {
-      if (req.session.user){
+      if (req.session.user && req.session.user === "Sean"){
         var new_session = {
           "title": req.body.title,
-          "data" : req.body.data,
-          "date" : req.body.date
+          "data" : (req.body.data) ? req.body.data : [],
+          "date" : (req.body.date) ? req.body.date : ""
         }
         database.client.connect(err => {
             if (err) throw err;
@@ -550,7 +550,7 @@ router.post("/sessions", async (req, res, next) => {
 
 router.put("/sessions", async (req, res, next) => {
   try {
-      if (req.session.user && req.body._id){
+      if (req.session.user && req.body._id && req.session.user === "Sean"){
         database.client.connect(err => {
           if (err) throw err;
 
