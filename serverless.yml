@@ -1,8 +1,6 @@
 org: seanmngan
 app: hattavick-backend
 service: hattavick-backend
-
-frameworkVersion: '2'
 	
 variablesResolutionMode: 20210326
 
