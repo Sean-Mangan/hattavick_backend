@@ -495,7 +495,7 @@ router.put("/notes", async (req, res, next) => {
 
 router.get("/sessions", async (req, res, next) => {
   try {
-      if (req.session.user){
+      if (req.body){
         database.client.connect(err => {
             if (err) throw err;
             database.client.db("Hattavick").collection("session_overview").find({}).toArray(function(err, result) {
