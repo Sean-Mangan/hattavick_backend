@@ -4,6 +4,7 @@ const router = express.Router();
 const database = require('../database/database');
 var ObjectId = require('mongodb').ObjectId
 const fs = require('fs');
+const axios = require("axios")
 
 router.post("/login", (req, res, next) => {
   try{
@@ -141,10 +142,27 @@ router.get("/player_character", async (req, res, next) => {
   }
 });
 
+async function get_hero_forge_link(link){
+  if ((link) && (link.includes("www.heroforge.com"))){
+    var response = await axios.get(link)
+    if (response){
+        text = response["data"]
+        var idx = text.indexOf("og:image");
+        text = text.slice(idx+19, text.length-1)
+        idx = text.indexOf("\"");
+        text = text.slice(0, idx)
+        return text
+    }
+  }else{
+    return link
+  }
+}
+
 router.put("/player_character", async (req, res, next) => {
   try {
     if ((req.session.user) && (req.session.user === req.body.player_name)){
       console.log(req.body)
+      req.body.image = await get_hero_forge_link(req.body.image)
       database.client.connect(err => {
         if (err) throw err;
         database.client.db("Hattavick").collection("player_characters").updateOne({"player_name" : req.session.user}, {$set: req.body}, function(err, result) {
